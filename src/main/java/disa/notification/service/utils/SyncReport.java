@@ -414,9 +414,6 @@ public class SyncReport implements XLSColumnConstants {
                 case TYPE_OF_RESULT:
                     cell.setCellValue(viralLoaderResult.getTypeOfResult()); 
                     break;
-                case NID:
-                    cell.setCellValue(viralLoaderResult.getNID());
-                    break;
                 case DISTRICT:
                     cell.setCellValue(viralLoaderResult.getRequestingDistrictName());
                     break;
@@ -476,13 +473,12 @@ public class SyncReport implements XLSColumnConstants {
 
     private void createUnsyncronizedViralResultRow(Row row, LabResults viralLoaderResult) {
         row.createCell(COL0_REQUEST_ID).setCellValue(viralLoaderResult.getRequestId());
-        row.createCell(COL1_NID).setCellValue(viralLoaderResult.getNID());
-        row.createCell(COL2_DISTRICT).setCellValue(viralLoaderResult.getRequestingDistrictName());
-        row.createCell(COL3_HEALTH_FACILITY_CODE).setCellValue(viralLoaderResult.getHealthFacilityLabCode());
-        row.createCell(COL4_HEALTH_FACILITY_NAME).setCellValue(viralLoaderResult.getRequestingFacilityName());
-        row.createCell(COL5_SENT_DATE).setCellValue(
+        row.createCell(COL1_DISTRICT).setCellValue(viralLoaderResult.getRequestingDistrictName());
+        row.createCell(COL2_HEALTH_FACILITY_CODE).setCellValue(viralLoaderResult.getHealthFacilityLabCode());
+        row.createCell(COL3_HEALTH_FACILITY_NAME).setCellValue(viralLoaderResult.getRequestingFacilityName());
+        row.createCell(COL4_SENT_DATE).setCellValue(
                 viralLoaderResult.getCreatedAt().toLocalDate().format(DATE_FORMAT));
-        row.createCell(COL6_STATUS).setCellValue(messageSource
+        row.createCell(COL5_STATUS).setCellValue(messageSource
                 .getMessage("disa.viraLoadStatus." + viralLoaderResult.getViralLoadStatus(), new String[] {}, null));
     }
 

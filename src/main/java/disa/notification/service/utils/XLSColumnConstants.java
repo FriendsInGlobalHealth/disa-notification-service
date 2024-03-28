@@ -7,9 +7,9 @@ public interface XLSColumnConstants {
     int THIRD_ROW = 2;
     int COL0_REQUEST_ID = 0;
     int COL1_NID = 1;
-    int COL2_DISTRICT = 2;
-    int COL3_HEALTH_FACILITY_CODE = 3;
-    int COL4_HEALTH_FACILITY_NAME = 4;
+    int COL1_DISTRICT = 1;
+    int COL2_HEALTH_FACILITY_CODE = 2;
+    int COL3_HEALTH_FACILITY_NAME = 3;
     int COL5_CREATED_AT = 5;
     int COL6_UPDATED_AT = 6;
     int COL7_VIRAL_RESULT_STATUS = 7;
@@ -20,7 +20,6 @@ public interface XLSColumnConstants {
     enum ResultsReceivedByNid {
         REQUEST_ID("ID da Requisição"),
         TYPE_OF_RESULT("Tipo de Resultado"),
-        NID("NID"),
         DISTRICT("Distrito"),
         HEALTH_FACILITY_CODE("Codigo da US"),
         HEALTH_FACILITY_NAME("Nome da US"),
@@ -84,8 +83,8 @@ public interface XLSColumnConstants {
         "Data de Entrada",
         "Estado"
     };
-    int COL5_SENT_DATE = 5;
-    int COL6_STATUS = 6;
+    int COL4_SENT_DATE = 4;
+    int COL5_STATUS = 5;
 
     String VIRAL_RESULT_SUMMARY_TITLE = "Resultados Recebidos no Servidor de Integração no Período de Domingo (%s) a Sábado (%s) da semana enterior por US";
     String VIRAL_RESULT_TITLE = "Resultados Recebidos no Servidor de Integração no Periodo de Domingo (%s) a Sábado (%s) da semana anterior";
