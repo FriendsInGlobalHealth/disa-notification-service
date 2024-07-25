@@ -26,7 +26,7 @@ public interface ViralLoaderRepository extends CrudRepository<ViralLoaderEntity,
                 "from VlData where RequestingFacilityCode in (:ouCodes) AND  CREATED_AT BETWEEN :startDateTime AND :endDateTime AND ENTITY_STATUS='ACTIVE' group by RequestingProvinceName ,RequestingDistrictName,RequestingFacilityCode, TypeOfResult",nativeQuery = true)
     List<LabResultSummary> findViralLoadResultSummary(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime,@Param("ouCodes") Set<String> orgUnitCodes);
 
-    @Query(value = "SELECT RequestId as requestId, UNIQUEID as nid, FIRSTNAME as firstName, SURNAME as lastName,RequestingDistrictName as requestingDistrictName,RequestingFacilityName as requestingFacilityName," +
+    @Query(value = "SELECT RequestId as requestId, UNIQUEID as nid, FIRSTNAME as firstName, SURNAME as lastName,RequestingProvinceName, RequestingDistrictName as requestingDistrictName,RequestingFacilityName as requestingFacilityName," +
             "RequestingFacilityCode as healthFacilityLabCode,CREATED_AT createdAt,UPDATED_AT updatedAt, VIRAL_LOAD_STATUS as viralLoadStatus, NOT_PROCESSING_CAUSE as notProcessingCause, TypeOfResult AS typeOfResult " +
             " from VlData where  RequestingFacilityCode in (:ouCodes) AND  CREATED_AT BETWEEN :startDateTime AND :endDateTime AND ENTITY_STATUS='ACTIVE'",nativeQuery = true)
     List<LabResults> findViralLoadResults(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime,@Param("ouCodes") Set<String> orgUnitCodes);
