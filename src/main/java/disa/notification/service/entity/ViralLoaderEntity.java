@@ -84,7 +84,7 @@ public class ViralLoaderEntity {
     @Column(name = "AnalysisDateTime")
     private LocalDateTime processingDate;
 
-    @Column(name = "LIMSSpecimenSourceDesc")
+    @Column(name = "LIMSSpecimenSourceCode")
     private String sampleType;
 
     @Column(name = "HIVVL_ViralLoadCAPCTM")
