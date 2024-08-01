@@ -50,7 +50,6 @@ public class LabResultSenderTask {
             sendEmailForImplementingPartner(implementingPartner);
         }
 
-        System.exit(0);
     }
 
     private void sendEmailForImplementingPartner(ImplementingPartner implementingPartner) {
