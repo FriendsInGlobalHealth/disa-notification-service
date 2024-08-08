@@ -65,7 +65,7 @@ public class MailServiceImpl implements MailService {
     	
     	Context ctx = prepareEmailContext(viralLoaders);
     	String htmlContent = generateHtmlContent(ctx);
-    	String attachmentName = generateAttachmentName();
+    	String attachmentName = generateAttachmentName(ip);
 
         try {
         	ByteArrayResource attachment = generateAttachment(viralLoaders, viralLoadResults, unsyncronizedViralLoadResults,
@@ -129,8 +129,8 @@ public class MailServiceImpl implements MailService {
 		return templateEngine.process("index.html", ctx);
 	}
 	
-	private String generateAttachmentName() {
-        return "Lab_Results_from_" + startDateFormatted + "_To_" + endDateFormatted + ".xlsx";
+	private String generateAttachmentName(ImplementingPartner ip) {
+        return "CSaude_Resultados_SI-SESP_" + ip.getOrgName() + "_" + startDateFormatted + "_To_" + endDateFormatted + ".xlsx";
 	}
 	
 	private ByteArrayResource generateAttachment(List<LabResultSummary> viralLoaders, List<LabResults> viralLoadResults,
