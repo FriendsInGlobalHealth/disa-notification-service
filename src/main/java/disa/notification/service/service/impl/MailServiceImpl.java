@@ -130,7 +130,7 @@ public class MailServiceImpl implements MailService {
 	}
 	
 	private String generateAttachmentName(ImplementingPartner ip) {
-        return "CSaude_Resultados_SI-SESP_" + ip.getOrgName() + "_" + startDateFormatted + "_To_" + endDateFormatted + ".xlsx";
+        return "CSaude_Resultados_SI-SESP_" + ip.getOrgName().toUpperCase() + "_" + startDateFormatted + "_a_" + endDateFormatted + ".xlsx";
 	}
 	
 	private ByteArrayResource generateAttachment(List<LabResultSummary> viralLoaders, List<LabResults> viralLoadResults,
