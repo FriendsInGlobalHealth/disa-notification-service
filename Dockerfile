@@ -1,5 +1,13 @@
+FROM eclipse-temurin:11-jdk-alpine as builder
+WORKDIR /opt/app
+COPY .mvn/ .mvn/
+COPY mvnw pom.xml ./
+RUN --mount=type=cache,target=/root/.m2 ./mvnw dependency:go-offline
+COPY ./src ./src
+RUN --mount=type=cache,target=/root/.m2 ./mvnw clean install
+
 FROM eclipse-temurin:11-jre-alpine
 RUN ln -s /usr/share/zoneinfo/Africa/Maputo /etc/localtime
-RUN mkdir /opt/disa-notification-service
-COPY target/notification.service-2.6.1-SNAPSHOT.jar /opt/disa-notification-service/
-CMD ["java", "-jar", "/opt/disa-notification-service/notification.service-2.6.1-SNAPSHOT.jar"]
+WORKDIR /
+COPY --from=builder /opt/app/target/*.jar disa-notification-service.jar
+ENTRYPOINT ["java", "-jar", "/disa-notification-service.jar"]
