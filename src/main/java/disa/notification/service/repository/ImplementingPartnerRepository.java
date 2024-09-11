@@ -10,5 +10,5 @@ import disa.notification.service.entity.ImplementingPartner;
 
 public interface ImplementingPartnerRepository extends Repository<ImplementingPartner, Integer> {
     @EntityGraph(value = "graph.ImplementingPartner.orgUnits", type = EntityGraphType.LOAD)
-    List<ImplementingPartner> findByEnabledTrue();
+    List<ImplementingPartner> findByEnabledTrueAndRepoLinkIsNotNullAndRepoIdIsNotNull();
 }
