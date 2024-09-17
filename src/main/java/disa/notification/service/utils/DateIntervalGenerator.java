@@ -1,6 +1,4 @@
-package disa.notification.service.utils.date;
-
-import disa.notification.service.utils.DateInterval;
+package disa.notification.service.utils;
 
 @FunctionalInterface
 public interface DateIntervalGenerator {

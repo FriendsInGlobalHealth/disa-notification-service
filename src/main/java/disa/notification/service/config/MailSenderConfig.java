@@ -18,8 +18,8 @@ import disa.notification.service.service.impl.FileSystemMailService;
 import disa.notification.service.service.impl.MailServiceImpl;
 import disa.notification.service.service.interfaces.MailService;
 import disa.notification.service.utils.DateInterval;
+import disa.notification.service.utils.DateIntervalGenerator;
 import disa.notification.service.utils.DateTimeUtils;
-import disa.notification.service.utils.date.DateIntervalGenerator;
 
 @Configuration
 public class MailSenderConfig {

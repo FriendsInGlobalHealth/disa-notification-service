@@ -20,7 +20,7 @@ import disa.notification.service.service.interfaces.LabResults;
 import disa.notification.service.service.interfaces.MailService;
 import disa.notification.service.service.interfaces.PendingHealthFacilitySummary;
 import disa.notification.service.utils.DateInterval;
-import disa.notification.service.utils.date.DateIntervalGenerator;
+import disa.notification.service.utils.DateIntervalGenerator;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -51,7 +51,6 @@ public class LabResultSenderTask {
             log.info(" A Sincronizar Dados da Provincia de {}", implementingPartner.getOrgName());
             sendEmailForImplementingPartner(implementingPartner, reportDateInterval);
         }
-        System.exit(0);
     }
 
     private void sendEmailForImplementingPartner(ImplementingPartner implementingPartner,
