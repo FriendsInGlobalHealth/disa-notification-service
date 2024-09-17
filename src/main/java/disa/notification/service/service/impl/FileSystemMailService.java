@@ -19,6 +19,7 @@ import disa.notification.service.service.interfaces.LabResults;
 import disa.notification.service.service.interfaces.MailService;
 import disa.notification.service.service.interfaces.PendingHealthFacilitySummary;
 import disa.notification.service.utils.DateInterval;
+import disa.notification.service.utils.DateIntervalGenerator;
 import disa.notification.service.utils.SyncReport;
 import lombok.extern.log4j.Log4j2;
 
@@ -29,12 +30,12 @@ import lombok.extern.log4j.Log4j2;
 public class FileSystemMailService implements MailService {
 
     private MessageSource messageSource;
-    
-    private DateInterval reportDateInterval;
 
-    public FileSystemMailService(MessageSource messageSource, DateInterval reportDateInterval) {
+    private DateIntervalGenerator reportDateIntervalGenerator;
+
+    public FileSystemMailService(MessageSource messageSource, DateIntervalGenerator reportDateIntervalGenerator) {
         this.messageSource = messageSource;
-        this.reportDateInterval = reportDateInterval;
+        this.reportDateIntervalGenerator = reportDateIntervalGenerator;
     }
 
     public void sendEmail(ImplementingPartner ip, List<LabResultSummary> viralLoaders,
@@ -43,12 +44,14 @@ public class FileSystemMailService implements MailService {
             throws MessagingException, UnsupportedEncodingException {
 
         try {
-        	 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-             String start = formatter.format(reportDateInterval.getStartDateTime());
-             String end = formatter.format(reportDateInterval.getEndDateTime());
+            DateInterval reportDateInterval = reportDateIntervalGenerator.generateDateInterval();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            String start = formatter.format(reportDateInterval.getStartDateTime());
+            String end = formatter.format(reportDateInterval.getEndDateTime());
             SyncReport syncReport = new SyncReport(messageSource, reportDateInterval);
-            ByteArrayResource xls = syncReport.getViralResultXLS(viralLoaders, viralLoadResults, unsyncronizedViralLoadResults,pendingHealthFacilitySummaries);
-          
+            ByteArrayResource xls = syncReport.getViralResultXLS(viralLoaders, viralLoadResults,
+                    unsyncronizedViralLoadResults, pendingHealthFacilitySummaries);
+
             Path path = Paths.get("viral_Result_from_" + start + "_To_" + end + ".xlsx");
             Files.write(path, xls.getByteArray());
             log.info("File writen to path {}", path.toAbsolutePath());

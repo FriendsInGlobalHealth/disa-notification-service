@@ -52,8 +52,8 @@ public class MailSenderConfig {
 
 	@Bean
 	@ConditionalOnProperty(name = "app.mailservice", havingValue = "fileSystem")
-	MailService fileSystemMailService(MessageSource messageSource, DateInterval reportDateInterval) {
-		return new FileSystemMailService(messageSource, reportDateInterval);
+	MailService fileSystemMailService(MessageSource messageSource, DateIntervalGenerator reportDateIntervalGenerator) {
+		return new FileSystemMailService(messageSource, reportDateIntervalGenerator);
 	}
 
 	@Bean
