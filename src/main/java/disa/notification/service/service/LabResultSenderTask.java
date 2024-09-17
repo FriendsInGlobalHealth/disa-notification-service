@@ -45,7 +45,7 @@ public class LabResultSenderTask {
         // and it uses the @EntityGraph annotation to ensure that related entities are
         // loaded along with
         // the query results
-        List<ImplementingPartner> implementingPartners = ipRepository.findByEnabledTrue();
+        List<ImplementingPartner> implementingPartners = ipRepository.findByEnabledTrueAndRepoLinkIsNotNullAndRepoIdIsNotNull();
 
         for (ImplementingPartner implementingPartner : implementingPartners) {
             log.info(" A Sincronizar Dados da Provincia de {}", implementingPartner.getOrgName());
