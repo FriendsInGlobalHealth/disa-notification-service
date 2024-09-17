@@ -20,6 +20,7 @@ import disa.notification.service.service.interfaces.LabResults;
 import disa.notification.service.service.interfaces.MailService;
 import disa.notification.service.service.interfaces.PendingHealthFacilitySummary;
 import disa.notification.service.utils.DateInterval;
+import disa.notification.service.utils.DateIntervalGenerator;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -29,11 +30,12 @@ public class LabResultSenderTask {
 
     private final ImplementingPartnerRepository ipRepository;
     private final MailService mailService;
-    private final DateInterval reportDateInterval;
+    private final DateIntervalGenerator reportDateIntervalGenerator;
     private final ViralLoaderRepository viralLoaderRepository;
 
     @Scheduled(cron = "${task.cron}")
     public void sendLabResultReport() {
+        DateInterval reportDateInterval = reportDateIntervalGenerator.generateDateInterval();
         log.info("Iniciando a task de Sincronizacao de Cargas virais");
         log.info("Report date interval {}", reportDateInterval);
         log.info("A Compor Dados para envio");
@@ -47,12 +49,12 @@ public class LabResultSenderTask {
 
         for (ImplementingPartner implementingPartner : implementingPartners) {
             log.info(" A Sincronizar Dados da Provincia de {}", implementingPartner.getOrgName());
-            sendEmailForImplementingPartner(implementingPartner);
+            sendEmailForImplementingPartner(implementingPartner, reportDateInterval);
         }
-
     }
 
-    private void sendEmailForImplementingPartner(ImplementingPartner implementingPartner) {
+    private void sendEmailForImplementingPartner(ImplementingPartner implementingPartner,
+            DateInterval reportDateInterval) {
         LocalDateTime startDateTime = reportDateInterval.getStartDateTime();
         LocalDateTime endDateTime = reportDateInterval.getEndDateTime();
         Set<String> orgUnitCodes = implementingPartner.getOrgUnitCodes();

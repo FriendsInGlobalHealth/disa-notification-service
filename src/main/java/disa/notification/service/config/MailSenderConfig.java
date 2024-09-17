@@ -18,6 +18,7 @@ import disa.notification.service.service.impl.FileSystemMailService;
 import disa.notification.service.service.impl.MailServiceImpl;
 import disa.notification.service.service.interfaces.MailService;
 import disa.notification.service.utils.DateInterval;
+import disa.notification.service.utils.DateIntervalGenerator;
 import disa.notification.service.utils.DateTimeUtils;
 
 @Configuration
@@ -51,22 +52,22 @@ public class MailSenderConfig {
 
 	@Bean
 	@ConditionalOnProperty(name = "app.mailservice", havingValue = "fileSystem")
-	MailService fileSystemMailService(MessageSource messageSource, DateInterval reportDateInterval) {
-		return new FileSystemMailService(messageSource, reportDateInterval);
+	MailService fileSystemMailService(MessageSource messageSource, DateIntervalGenerator reportDateIntervalGenerator) {
+		return new FileSystemMailService(messageSource, reportDateIntervalGenerator);
 	}
 
 	@Bean
 	@ConditionalOnProperty(name = "app.reportDateInterval", havingValue = "lastWeek")
-	DateInterval lastWeekDateInterval() {
-		return DateTimeUtils.getLastWeekInterVal();
+	DateIntervalGenerator lastWeekDateInterval() {
+		return () -> DateTimeUtils.getLastWeekInterVal();
 	}
 
 	@Bean
 	@ConditionalOnProperty(name = "app.reportDateInterval", havingValue = "currentWeek")
-	DateInterval currentWeekDateInterval() {
-		return DateTimeUtils.getCurrentWeekInterVal();
+	DateIntervalGenerator currentWeekDateInterval() {
+		return () -> DateTimeUtils.getCurrentWeekInterVal();
 	}
-	
+
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
