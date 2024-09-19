@@ -17,7 +17,6 @@ import disa.notification.service.service.SeafileService;
 import disa.notification.service.service.impl.FileSystemMailService;
 import disa.notification.service.service.impl.MailServiceImpl;
 import disa.notification.service.service.interfaces.MailService;
-import disa.notification.service.utils.DateInterval;
 import disa.notification.service.utils.DateIntervalGenerator;
 import disa.notification.service.utils.DateTimeUtils;
 
@@ -46,7 +45,7 @@ public class MailSenderConfig {
 	@Bean
 	@ConditionalOnProperty(name = "app.mailservice", havingValue = "javaMail")
 	public MailService mailServiceImpl(TemplateEngine templateEngine, MessageSource messageSource,
-			DateInterval reportDateInterval, SeafileService seafileService) {
+			DateIntervalGenerator reportDateInterval, SeafileService seafileService) {
 		return new MailServiceImpl(templateEngine, messageSource, reportDateInterval, seafileService);
 	}
 
