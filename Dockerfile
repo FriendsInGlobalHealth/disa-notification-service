@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11-jdk-alpine as builder
+FROM eclipse-temurin:11-jdk-alpine AS builder
 WORKDIR /opt/app
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
