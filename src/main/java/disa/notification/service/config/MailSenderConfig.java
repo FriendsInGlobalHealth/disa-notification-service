@@ -1,11 +1,14 @@
 package disa.notification.service.config;
 
+import java.time.LocalDate;
 import java.util.Collections;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -17,6 +20,7 @@ import disa.notification.service.service.SeafileService;
 import disa.notification.service.service.impl.FileSystemMailService;
 import disa.notification.service.service.impl.MailServiceImpl;
 import disa.notification.service.service.interfaces.MailService;
+import disa.notification.service.utils.DateInterval;
 import disa.notification.service.utils.DateIntervalGenerator;
 import disa.notification.service.utils.DateTimeUtils;
 
@@ -62,9 +66,11 @@ public class MailSenderConfig {
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "app.reportDateInterval", havingValue = "currentWeek")
-	DateIntervalGenerator currentWeekDateInterval() {
-		return () -> DateTimeUtils.getCurrentWeekInterVal();
+	@ConditionalOnProperty(name = "app.reportDateInterval", havingValue = "custom")
+	DateIntervalGenerator currentWeekDateInterval(
+			@Value("${app.startDate}") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+			@Value("${app.endDate}") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+		return () -> DateInterval.of(startDate.atStartOfDay(), endDate.atTime(23, 59, 59));
 	}
 
 	@Bean

@@ -37,6 +37,13 @@ sending to recipients.
 It is configured by setting the property `app.mailservice` to `fileSystem`, either on
 application.properties or by supplying a param to the excutable jar:
 
-   ```bash
-    java -jar notification-service.jar --app.mailservice=fileSystem
-    ```
+```bash
+java -jar notification-service.jar --app.mailservice=fileSystem
+```
+
+
+## Custom report date
+
+```bash
+java -jar notification-service.jar --app.reportDateInterval=custom --app.startDate=yyyy-MM-dd --app.endDate=yyyy-MM-dd
+```
