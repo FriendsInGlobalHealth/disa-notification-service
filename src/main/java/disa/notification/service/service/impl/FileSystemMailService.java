@@ -19,7 +19,6 @@ import disa.notification.service.service.interfaces.LabResults;
 import disa.notification.service.service.interfaces.MailService;
 import disa.notification.service.service.interfaces.PendingHealthFacilitySummary;
 import disa.notification.service.utils.DateInterval;
-import disa.notification.service.utils.DateIntervalGenerator;
 import disa.notification.service.utils.SyncReport;
 import lombok.extern.log4j.Log4j2;
 
@@ -31,24 +30,20 @@ public class FileSystemMailService implements MailService {
 
     private MessageSource messageSource;
 
-    private DateIntervalGenerator reportDateIntervalGenerator;
-
-    public FileSystemMailService(MessageSource messageSource, DateIntervalGenerator reportDateIntervalGenerator) {
+    public FileSystemMailService(MessageSource messageSource) {
         this.messageSource = messageSource;
-        this.reportDateIntervalGenerator = reportDateIntervalGenerator;
     }
 
-    public void sendEmail(ImplementingPartner ip, List<LabResultSummary> viralLoaders,
+    public void sendEmail(ImplementingPartner ip, DateInterval dateInterval, List<LabResultSummary> viralLoaders,
             List<LabResults> viralLoadResults, List<LabResults> unsyncronizedViralLoadResults,
             List<PendingHealthFacilitySummary> pendingHealthFacilitySummaries)
             throws MessagingException, UnsupportedEncodingException {
 
         try {
-            DateInterval reportDateInterval = reportDateIntervalGenerator.generateDateInterval();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            String start = formatter.format(reportDateInterval.getStartDateTime());
-            String end = formatter.format(reportDateInterval.getEndDateTime());
-            SyncReport syncReport = new SyncReport(messageSource, reportDateInterval);
+            String start = formatter.format(dateInterval.getStartDateTime());
+            String end = formatter.format(dateInterval.getEndDateTime());
+            SyncReport syncReport = new SyncReport(messageSource, dateInterval);
             ByteArrayResource xls = syncReport.getViralResultXLS(viralLoaders, viralLoadResults,
                     unsyncronizedViralLoadResults, pendingHealthFacilitySummaries);
 
@@ -63,7 +58,7 @@ public class FileSystemMailService implements MailService {
     }
 
     @Override
-    public void sendNoResultsEmail(ImplementingPartner ip)
+    public void sendNoResultsEmail(ImplementingPartner ip, DateInterval dateInterval)
             throws MessagingException, UnsupportedEncodingException {
         log.info("No results to generate xls.");
     }
