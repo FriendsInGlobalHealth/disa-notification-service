@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -24,7 +25,6 @@ import disa.notification.service.service.interfaces.LabResults;
 import disa.notification.service.service.interfaces.MailService;
 import disa.notification.service.service.interfaces.PendingHealthFacilitySummary;
 import disa.notification.service.utils.DateInterval;
-import disa.notification.service.utils.DateIntervalGenerator;
 import disa.notification.service.utils.ExcelUtil;
 import disa.notification.service.utils.MultipartUtil;
 import disa.notification.service.utils.SyncReport;
@@ -38,22 +38,12 @@ public class MailServiceImpl implements MailService {
 
     private TemplateEngine templateEngine;
     private final MessageSource messageSource;
-    private DateInterval reportDateInterval;
-    private final String startDateFormatted;
-    private final String endDateFormatted;
     private final SeafileService seafileService;
 
-    public MailServiceImpl(TemplateEngine templateEngine, MessageSource messageSource,
-            DateIntervalGenerator reportDateIntervalGenerator, SeafileService seafileService) {
+    public MailServiceImpl(TemplateEngine templateEngine, MessageSource messageSource, SeafileService seafileService) {
         this.templateEngine = templateEngine;
         this.messageSource = messageSource;
-        this.reportDateInterval = reportDateIntervalGenerator.generateDateInterval();
         this.seafileService = seafileService;
-
-        this.startDateFormatted = this.reportDateInterval.getStartDateTime().toLocalDate()
-                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        this.endDateFormatted = this.reportDateInterval.getEndDateTime().toLocalDate()
-                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 
     @Value("${spring.mail.username}")
@@ -62,22 +52,22 @@ public class MailServiceImpl implements MailService {
     @Value("${disa.notifier.rest.endpoint}")
     private String disaNotifierEndPoint;
 
-    public void sendEmail(final ImplementingPartner ip,
+    public void sendEmail(final ImplementingPartner ip, DateInterval dateInterval,
             final List<LabResultSummary> viralLoaders, List<LabResults> viralLoadResults,
             List<LabResults> unsyncronizedViralLoadResults,
             List<PendingHealthFacilitySummary> pendingHealthFacilitySummaries) {
 
-        Context ctx = prepareEmailContext(viralLoaders);
+        Context ctx = prepareEmailContext(viralLoaders, dateInterval);
         String htmlContent = generateHtmlContent(ctx);
-        String attachmentName = generateAttachmentName(ip);
+        String attachmentName = generateAttachmentName(ip, dateInterval);
 
         try {
-            ByteArrayResource attachment = generateAttachment(viralLoaders, viralLoadResults,
+            ByteArrayResource attachment = generateAttachment(dateInterval, viralLoaders, viralLoadResults,
                     unsyncronizedViralLoadResults,
                     pendingHealthFacilitySummaries);
 
             if (attachment != null) {
-                processAttachmentAndSendEmail(ip, attachment, htmlContent, attachmentName);
+                processAttachmentAndSendEmail(ip, dateInterval, attachment, htmlContent, attachmentName);
             }
 
         } catch (IOException e) {
@@ -85,10 +75,12 @@ public class MailServiceImpl implements MailService {
         }
     }
 
-    public void sendNoResultsEmail(ImplementingPartner ip)
+    public void sendNoResultsEmail(ImplementingPartner ip, DateInterval dateInterval)
             throws MessagingException, UnsupportedEncodingException {
 
         Context ctx = new Context(new Locale("pt", "BR"));
+        String startDateFormatted = formatDate(dateInterval.getStartDateTime());
+        String endDateFormatted = formatDate(dateInterval.getEndDateTime());
         ctx.setVariable("fromDate", startDateFormatted);
         ctx.setVariable("toDate", endDateFormatted);
 
@@ -97,6 +89,10 @@ public class MailServiceImpl implements MailService {
         final String htmlContent = this.templateEngine.process("noResults.html", ctx);
         sendEmailHelper(mailList, htmlContent, "notification", null, startDateFormatted, endDateFormatted,
                 ip.getRepoLink(), Boolean.FALSE);
+    }
+
+    private String formatDate(LocalDateTime localDate) {
+        return localDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 
     private void sendEmailHelper(String[] mailList, String htmlContent, String module,
@@ -124,10 +120,10 @@ public class MailServiceImpl implements MailService {
 
     }
 
-    private Context prepareEmailContext(List<LabResultSummary> viralLoaders) {
+    private Context prepareEmailContext(List<LabResultSummary> viralLoaders, DateInterval dateInterval) {
         final Context ctx = new Context(new Locale("pt", "BR"));
-        ctx.setVariable("fromDate", startDateFormatted);
-        ctx.setVariable("toDate", endDateFormatted);
+        ctx.setVariable("fromDate", formatDate(dateInterval.getStartDateTime()));
+        ctx.setVariable("toDate", formatDate(dateInterval.getEndDateTime()));
         ctx.setVariable("viralLoaders", viralLoaders);
         return ctx;
     }
@@ -137,28 +133,32 @@ public class MailServiceImpl implements MailService {
         return templateEngine.process("index.html", ctx);
     }
 
-    private String generateAttachmentName(ImplementingPartner ip) {
-        return "CSaude_Resultados_SI-SESP_" + ip.getOrgName().toUpperCase() + "_" + startDateFormatted + "_a_"
-                + endDateFormatted + ".xlsx";
+    private String generateAttachmentName(ImplementingPartner ip, DateInterval dateInterval) {
+        return "CSaude_Resultados_SI-SESP_" + ip.getOrgName().toUpperCase() + "_"
+                + formatDate(dateInterval.getStartDateTime()) + "_a_"
+                + formatDate(dateInterval.getEndDateTime()) + ".xlsx";
     }
 
-    private ByteArrayResource generateAttachment(List<LabResultSummary> viralLoaders, List<LabResults> viralLoadResults,
+    private ByteArrayResource generateAttachment(DateInterval dateInterval, List<LabResultSummary> viralLoaders,
+            List<LabResults> viralLoadResults,
             List<LabResults> unsyncronizedViralLoadResults,
             List<PendingHealthFacilitySummary> pendingHealthFacilitySummaries) throws IOException {
-        SyncReport syncReport = new SyncReport(messageSource, reportDateInterval);
+        SyncReport syncReport = new SyncReport(messageSource, dateInterval);
         return syncReport.getViralResultXLS(viralLoaders, viralLoadResults,
                 unsyncronizedViralLoadResults,
                 pendingHealthFacilitySummaries);
     }
 
-    private void processAttachmentAndSendEmail(ImplementingPartner ip, ByteArrayResource attachment, String htmlContent,
+    private void processAttachmentAndSendEmail(ImplementingPartner ip, DateInterval dateInterval,
+            ByteArrayResource attachment, String htmlContent,
             String attachmentName) {
         String[] mailList = ip.getMailList().split(",");
         try {
             ExcelUtil.saveWorkbook(attachment, attachmentName);
             seafileService.uploadFile(ip.getRepoId(), attachmentName);
             sendEmailHelper(mailList, htmlContent, "notification",
-                    attachmentName, startDateFormatted, endDateFormatted, ip.getRepoLink(), Boolean.TRUE);
+                    attachmentName, formatDate(dateInterval.getStartDateTime()),
+                    formatDate(dateInterval.getEndDateTime()), ip.getRepoLink(), Boolean.TRUE);
             deleteTemporaryFile(attachmentName);
         } catch (Exception e) {
             log.error("Error processing attachment and sending email", e);
