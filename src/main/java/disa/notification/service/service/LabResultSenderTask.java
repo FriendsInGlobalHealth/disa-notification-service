@@ -40,9 +40,8 @@ public class LabResultSenderTask {
     @Scheduled(cron = "${task.cron}")
     public void sendLabResultReport() {
         DateInterval reportDateInterval = getDateIntervalGenerator().generateDateInterval();
-        log.info("Iniciando a task de Sincronizacao de Cargas virais");
+        log.info("Starting weekly report task");
         log.info("Report date interval {}", reportDateInterval);
-        log.info("A Compor Dados para envio");
 
         // Custom query method that returns all implementing entities where the enabled
         // field is true,
@@ -53,7 +52,7 @@ public class LabResultSenderTask {
                 .findByEnabledTrueAndRepoLinkIsNotNullAndRepoIdIsNotNull();
 
         for (ImplementingPartner implementingPartner : implementingPartners) {
-            log.info(" A Sincronizar Dados da Provincia de {}", implementingPartner.getOrgName());
+            log.info("Generating report for {}", implementingPartner.getOrgName());
             sendEmailForImplementingPartner(implementingPartner, reportDateInterval);
         }
     }
